@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProposalData, Language, UI_TEXT } from '../types';
-import { Download, Share2, CheckCircle2, AlertTriangle, Layers, Users, TrendingUp } from 'lucide-react';
+import { Download, Share2, CheckCircle2, AlertTriangle, Layers, Users, TrendingUp, FileText, Code } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 interface GeneratedProposalProps {
@@ -63,6 +63,14 @@ const GeneratedProposal: React.FC<GeneratedProposalProps> = ({ data, onReset, la
 
     addText(`5. ${text.headers.investment.toUpperCase()}`, 12, 'bold', [0, 0, 0]);
     addText(data.investment, 10, 'normal', [60, 60, 60]);
+    yPos += 5;
+
+    addText(`6. VALUE STREAM MAPPING (VSM) SESSIE`.toUpperCase(), 12, 'bold', [0, 0, 0]);
+    addText(data.vsmSession, 10, 'normal', [60, 60, 60]);
+    yPos += 5;
+
+    addText(`7. DORA METRICS IMPROVEMENT`.toUpperCase(), 12, 'bold', [0, 0, 0]);
+    addText(data.doraMetrics, 10, 'normal', [60, 60, 60]);
 
     // Footer
     yPos = 270;
@@ -76,6 +84,46 @@ const GeneratedProposal: React.FC<GeneratedProposalProps> = ({ data, onReset, la
     doc.text(text.tagline, margin, yPos + 5);
 
     doc.save("opinity-proposal.pdf");
+  };
+
+  const handleExportJSON = () => {
+    const exportData = {
+      projectMission: data.azureDevOpsExport.projectMission,
+      userStories: data.azureDevOpsExport.userStories,
+      metadata: {
+        generated: new Date().toISOString(),
+        language: language,
+        proposalType: 'Opinity AI Proposal'
+      }
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'azure-devops-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Title', 'Description', 'Priority', 'Acceptance Criteria'];
+    const rows = data.azureDevOpsExport.userStories.map(story => [
+      story.id,
+      `"${story.title}"`,
+      `"${story.description.replace(/"/g, '""')}"`,
+      story.priority,
+      `"${story.acceptanceCriteria.join('; ')}"`
+    ]);
+    
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'azure-devops-user-stories.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -158,6 +206,76 @@ const GeneratedProposal: React.FC<GeneratedProposalProps> = ({ data, onReset, la
               </p>
             </section>
 
+            {/* VSM Session */}
+            <section className="group">
+              <h3 className="flex items-center gap-3 text-lg font-bold mb-3 uppercase tracking-wider text-[#599229]">
+                <Layers className="w-5 h-5" />
+                6. Value Stream Mapping (VSM) Sessie
+              </h3>
+              <div className="pl-8 border-l-2 border-[#599229] bg-green-50 p-4 rounded-r-md">
+                <p className="text-gray-700 leading-relaxed">
+                  {data.vsmSession}
+                </p>
+                <div className="mt-3 text-sm font-bold text-[#599229]">
+                  Kosten: €1.600,-
+                </div>
+              </div>
+            </section>
+
+            {/* DORA Metrics */}
+            <section className="group">
+              <h3 className="flex items-center gap-3 text-lg font-bold mb-3 uppercase tracking-wider text-[#00a4e8]">
+                <TrendingUp className="w-5 h-5" />
+                7. DORA Metrics Improvement
+              </h3>
+              <div className="pl-8 border-l-2 border-[#00a4e8] bg-blue-50 p-4 rounded-r-md">
+                <p className="text-gray-700 leading-relaxed">
+                  {data.doraMetrics}
+                </p>
+              </div>
+            </section>
+
+            {/* Azure DevOps Export Preview */}
+            <section className="group">
+              <h3 className="flex items-center gap-3 text-lg font-bold mb-3 uppercase tracking-wider text-[#9b51e0]">
+                <Code className="w-5 h-5" />
+                8. Azure DevOps User Stories
+              </h3>
+              <div className="pl-8 border-l-2 border-[#9b51e0] bg-purple-50 p-4 rounded-r-md">
+                <div className="mb-4">
+                  <h4 className="font-bold text-sm mb-2">Project Mission:</h4>
+                  <p className="text-gray-700 italic">"{data.azureDevOpsExport.projectMission}"</p>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="font-bold text-sm">User Stories ({data.azureDevOpsExport.userStories.length}):</h4>
+                  {data.azureDevOpsExport.userStories.map((story, index) => (
+                    <div key={index} className="bg-white p-3 rounded border border-purple-200">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-mono text-xs font-bold text-purple-600">{story.id}</span>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          story.priority === 'High' ? 'bg-red-100 text-red-700' :
+                          story.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-green-100 text-green-700'
+                        }`}>
+                          {story.priority}
+                        </span>
+                      </div>
+                      <h5 className="font-bold text-sm mb-1">{story.title}</h5>
+                      <p className="text-xs text-gray-600 mb-2 font-mono">{story.description}</p>
+                      <div className="text-xs">
+                        <strong>Acceptance Criteria:</strong>
+                        <ul className="list-disc list-inside mt-1 space-y-1">
+                          {story.acceptanceCriteria.map((ac, i) => (
+                            <li key={i} className="text-gray-600">{ac}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -167,7 +285,7 @@ const GeneratedProposal: React.FC<GeneratedProposalProps> = ({ data, onReset, la
                 ))}
              </div>
              
-             <div className="flex gap-4">
+             <div className="flex gap-4 flex-wrap">
                 <button 
                   onClick={onReset}
                   className="px-6 py-2 text-gray-500 hover:text-black font-mono text-sm underline transition-colors"
@@ -181,6 +299,22 @@ const GeneratedProposal: React.FC<GeneratedProposalProps> = ({ data, onReset, la
                   <Download className="w-5 h-5" />
                   {text.footer.export}
                 </button>
+                <div className="flex gap-2 border-l border-gray-300 pl-4">
+                  <button 
+                    onClick={handleExportJSON}
+                    className="bg-[#9b51e0] text-white px-6 py-3 rounded-sm font-bold shadow-lg hover:bg-purple-700 transition-all flex items-center gap-2 text-sm"
+                  >
+                    <FileText className="w-4 h-4" />
+                    {text.export.json}
+                  </button>
+                  <button 
+                    onClick={handleExportCSV}
+                    className="bg-[#599229] text-white px-6 py-3 rounded-sm font-bold shadow-lg hover:bg-green-700 transition-all flex items-center gap-2 text-sm"
+                  >
+                    <FileText className="w-4 h-4" />
+                    {text.export.csv}
+                  </button>
+                </div>
              </div>
           </div>
 

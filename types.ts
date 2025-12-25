@@ -6,6 +6,18 @@ export interface ProposalData {
   solution: string;
   trinityFocus: string;
   investment: string;
+  vsmSession: string;
+  doraMetrics: string;
+  azureDevOpsExport: {
+    projectMission: string;
+    userStories: Array<{
+      id: string;
+      title: string;
+      description: string;
+      acceptanceCriteria: string[];
+      priority: string;
+    }>;
+  };
 }
 
 export interface GenerationConfig {
@@ -61,6 +73,11 @@ export const UI_TEXT = {
       processing: 'Transcribing Audio...',
       error: 'Microphone access denied or error.'
     },
+    export: {
+      azure: 'Export to Azure DevOps',
+      json: 'Download JSON',
+      csv: 'Download CSV'
+    },
     calculator: {
       title: 'Budget Estimator',
       engineers: 'Engineers',
@@ -105,6 +122,11 @@ export const UI_TEXT = {
       stop: 'Stop & Transcribeer',
       processing: 'Audio verwerken...',
       error: 'Microfoon toegang geweigerd of fout.'
+    },
+    export: {
+      azure: 'Exporteer naar Azure DevOps',
+      json: 'Download JSON',
+      csv: 'Download CSV'
     },
     calculator: {
       title: 'Budget Schatting',

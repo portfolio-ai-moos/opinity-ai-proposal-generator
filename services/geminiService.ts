@@ -17,6 +17,9 @@ Mandatory Content Requirements:
 3. The Solution: You MUST mention "CI/CD", "DORA metrics", and explicitly include a "Value Stream Mapping (VSM) sessie" priced at €1600,-.
 4. Opinity Trinity: Connect the solution to: "Happy Engineers", "DevOps Mindset", and "Winning Together".
 5. Investment: The user has provided a calculation. You MUST incorporate this total budget and resource breakdown into the narrative of the Investment section.
+6. VSM Session: Detail the Value Stream Mapping session - what it involves, who participates, and the expected outcomes.
+7. DORA Metrics: Specify which DORA metrics will be improved (Deployment Frequency, Lead Time for Changes, Change Failure Rate, Time to Restore Service).
+8. Azure DevOps Stories: Create 3-5 user stories in Gherkin format with acceptance criteria, ready for import into Azure DevOps.
 
 Output Format:
 Return ONLY a valid JSON object.
@@ -53,8 +56,45 @@ export const generateProposal = async (rawNotes: string, language: Language, con
         type: Type.STRING,
         description: "Estimated hours or cost structure, incorporating the user provided budget.",
       },
+      vsmSession: {
+        type: Type.STRING,
+        description: "Detailed description of the Value Stream Mapping session priced at €1600,-.",
+      },
+      doraMetrics: {
+        type: Type.STRING,
+        description: "Specific DORA metrics that will be improved and how.",
+      },
+      azureDevOpsExport: {
+        type: Type.OBJECT,
+        properties: {
+          projectMission: {
+            type: Type.STRING,
+            description: "Clear mission statement for the project.",
+          },
+          userStories: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                id: { type: Type.STRING, description: "Unique story ID (e.g., US-001)" },
+                title: { type: Type.STRING, description: "User story title" },
+                description: { type: Type.STRING, description: "User story description in Gherkin format" },
+                acceptanceCriteria: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                  description: "List of acceptance criteria"
+                },
+                priority: { type: Type.STRING, description: "Priority (High/Medium/Low)" }
+              },
+              required: ["id", "title", "description", "acceptanceCriteria", "priority"]
+            },
+            description: "Array of user stories for Azure DevOps"
+          }
+        },
+        required: ["projectMission", "userStories"]
+      }
     },
-    required: ["challenge", "approach", "solution", "trinityFocus", "investment"],
+    required: ["challenge", "approach", "solution", "trinityFocus", "investment", "vsmSession", "doraMetrics", "azureDevOpsExport"],
   };
 
   const languageInstruction = language === 'nl' 
