@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Opinity AI Proposal Generator",
+  "description": "High-tech, automated proposal generator for IT professionals. Transforms raw intake notes into engineer-first proposals using Opinity's Business DNA.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
