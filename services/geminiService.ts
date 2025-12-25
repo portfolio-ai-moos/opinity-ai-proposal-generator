@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, SchemaType } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { ProposalData, Language, GenerationConfig } from "../types";
 
 const SYSTEM_INSTRUCTION_BASE = `
